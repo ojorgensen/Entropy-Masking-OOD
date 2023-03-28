@@ -92,8 +92,8 @@ class Run:
                  keras_fit=False,
                  end_wandb=True,
                  verbose=1,
-                 wandb_entity='ole-test-entropy',
-                 wandb_project='project',
+                 wandb_entity='ojorgensen',
+                 wandb_project='wntropy-test',
                  name='run'):
 
         self.run_id = time_id()
