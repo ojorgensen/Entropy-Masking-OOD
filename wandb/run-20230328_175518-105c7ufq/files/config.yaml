@@ -1,0 +1,63 @@
+wandb_version: 1
+
+_wandb:
+  desc: null
+  value:
+    cli_version: 0.12.10
+    framework: keras
+    is_jupyter_run: false
+    is_kaggle_kernel: false
+    python_version: 3.10.6
+    start_time: 1680022518
+    t:
+      1:
+      - 2
+      - 3
+      3:
+      - 16
+      4: 3.10.6
+      5: 0.12.10
+      8:
+      - 5
+ds_info:
+  desc: null
+  value:
+    batch_size: 64
+    name: cifar10
+    num_distractors: 3
+loss_fn:
+  desc: null
+  value: <keras.losses.SparseCategoricalCrossentropy object at 0x7fb610498160>
+max_epochs:
+  desc: null
+  value: 5
+metrics:
+  desc: null
+  value: []
+model_config:
+  desc: null
+  value:
+    desc_len: 512
+    name: describer-512-3-0
+model_type:
+  desc: null
+  value: classifier
+name:
+  desc: null
+  value: describer-512-3-0
+optimiser_config:
+  desc: null
+  value:
+    amsgrad: false
+    beta_1: 0.9
+    beta_2: 0.999
+    decay: 0.0
+    epsilon: 1.0e-07
+    learning_rate: 0.001
+    name: Adam
+run_dir:
+  desc: null
+  value: ./runs/cifar-10/describer-512-3-0/describer-512-3-0-16800225149827266
+train_steps_per_epoch:
+  desc: null
+  value: 260
