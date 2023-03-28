@@ -92,7 +92,7 @@ class Run:
                  keras_fit=False,
                  end_wandb=True,
                  verbose=1,
-                 wandb_entity='dydi-analogies',
+                 wandb_entity='ole-test-entropy',
                  wandb_project='project',
                  name='run'):
 
