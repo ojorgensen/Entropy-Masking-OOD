@@ -8,10 +8,10 @@ import pandas as pd
 import numpy as np
 import tensorflow as tf
 
-from analogyproj.data_prep.k_constrast_ds import k_contrast_desc_ds, k_to_batch_size
-from analogyproj.data_prep import image_loaders
-from analogyproj.models.contrastive_desc_learning import ContrastiveDescriptionLearner
-from analogyproj.utils import progress_bar_string
+from entood.data_prep.k_constrast_ds import k_contrast_desc_ds, k_to_batch_size
+from entood.data_prep import image_loaders
+from entood.models.contrastive_desc_learning import ContrastiveDescriptionLearner
+from entood.utils import progress_bar_string
 
 
 def binary_entropy(x, eps=1e-12):

@@ -1,8 +1,8 @@
 import tensorflow as tf
 from official.nlp.modeling.layers import Transformer
 
-from analogyproj.models.parallel_apply import ParallelApply
-from analogyproj.models.comm_channel import CommChannel
+from entood.models.parallel_apply import ParallelApply
+from entood.models.comm_channel import CommChannel
 
 
 class ContrastiveDescriptionLearner(tf.keras.Model):

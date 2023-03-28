@@ -1,10 +1,10 @@
-from analogyproj.experiments.cifar100_coarse_label_split import (
+from entood.experiments.cifar100_coarse_label_split import (
     make_experiment_baseline_no_ae,
     make_experiment_baseline_ft_ae,
     make_experiment_platostore_ft_pae,
     generate_data
 )
-from analogyproj.analysis.classification import plot_confusion
+from entood.analysis.classification import plot_confusion
 
 import argparse
 import json
@@ -37,7 +37,7 @@ def plot_distribution_confusions(clf,
     cbar_ax = fig.add_subplot(gs[0:n, n])
 
     if not class_names:
-        from analogyproj.data_prep.cifar100_utils import read_cifar100_pretty_labels
+        from entood.data_prep.cifar100_utils import read_cifar100_pretty_labels
         _, class_names = read_cifar100_pretty_labels()
 
     for i, (name, ds) in enumerate(datasets):

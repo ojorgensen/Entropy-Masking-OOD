@@ -13,10 +13,10 @@ import tensorflow as tf
 
 import pandas as pd
 
-from analogyproj.analysis.describer_masking import MaskAccuracyComputer
-from analogyproj.analysis.describers_utils import DescribersLoader
-from analogyproj.data_prep import image_loaders
-from analogyproj.data_prep.k_constrast_ds import k_contrast_desc_ds, k_to_batch_size
+from entood.analysis.describer_masking import MaskAccuracyComputer
+from entood.analysis.describers_utils import DescribersLoader
+from entood.data_prep import image_loaders
+from entood.data_prep.k_constrast_ds import k_contrast_desc_ds, k_to_batch_size
 
 tf.get_logger().setLevel('INFO')
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'

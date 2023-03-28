@@ -1,10 +1,10 @@
 from pathlib import Path
 import time
 
-from analogyproj.models.contrastive_desc_learning import ContrastiveDescriptionLearner
-from analogyproj.data_prep import load_cifar10_data
-from analogyproj.data_prep.k_constrast_ds import k_contrast_desc_ds
-from analogyproj import Run, RunSequence
+from entood.models.contrastive_desc_learning import ContrastiveDescriptionLearner
+from entood.data_prep import load_cifar10_data
+from entood.data_prep.k_constrast_ds import k_contrast_desc_ds
+from entood import Run, RunSequence
 
 import tensorflow as tf
 

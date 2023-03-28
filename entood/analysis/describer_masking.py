@@ -8,8 +8,8 @@ import pandas as pd
 import numpy as np
 import tensorflow as tf
 
-from analogyproj.models.contrastive_desc_learning import ContrastiveDescriptionLearner
-from analogyproj.utils import progress_bar_string
+from entood.models.contrastive_desc_learning import ContrastiveDescriptionLearner
+from entood.utils import progress_bar_string
 from .describers_utils import compute_entropy_df
 
 

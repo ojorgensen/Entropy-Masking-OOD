@@ -2,7 +2,7 @@ import argparse
 
 import seaborn as sns
 
-from analogyproj.experiments.describer_experiments import (
+from entood.experiments.describer_experiments import (
     make_experiment_vary_k as make_experiment,
     generate_data_vary_k as generate_data
 )
