@@ -164,6 +164,19 @@ def compute_masked_accuracies(
     
     return masked_acc_df
 
+def compute_no_noise_encodings(
+        args,
+        describers,
+        image_datasets,
+        contrastive_datasets
+):
+    """
+    Computes the encodings of the communication channels for the given describers,
+    using the given datasets.
+    """
+    no_noise_df_path = args.no_noise_df_path
+    
+
 
 def ds_simple_name(ds_name):
     name = ds_name.lower()
@@ -230,7 +243,7 @@ def parse_args():
     parser.add_argument('--num_describers', default=None, help='How many describers to load')
     
     parser.add_argument('--masked_acc_df_path', type=str,
-                        default='experiments/contrastive/describer_masked_accuracies.csv',
+                        default='entood/experiments/contrastive/describer_masked_accuracies.csv',
                         help='Where to write masked accuracy DataFrame to.')
     parser.add_argument('--overwrite_files', default=False, action='store_true',
                         help='Whether or not to overwrite an existing file.')

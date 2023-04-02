@@ -1,0 +1,50 @@
+{
+    "ds_info": {
+        "batch_size": 64, 
+        "name": "cifar10", 
+        "num_distractors": 3
+    }, 
+    "history": {
+        "loss": [
+            0.5566057562828064, 
+            0.20815177261829376, 
+            0.17512206733226776, 
+            0.1445547193288803, 
+            0.1366634964942932
+        ], 
+        "val_loss": [
+            0.9029011130332947, 
+            0.5460928082466125, 
+            0.6895425319671631, 
+            0.6936302185058594, 
+            0.7679650783538818
+        ]
+    }, 
+    "run_config": {
+        "ds_info": {
+            "batch_size": 64, 
+            "name": "cifar10", 
+            "num_distractors": 3
+        }, 
+        "loss_fn": "<keras.losses.SparseCategoricalCrossentropy object at 0x7f58ecb8c970>", 
+        "max_epochs": 5, 
+        "metrics": [], 
+        "model_config": {
+            "desc_len": 512, 
+            "name": "describer-512-3-0"
+        }, 
+        "model_type": "classifier", 
+        "name": "describer-512-3-0", 
+        "optimiser_config": {
+            "amsgrad": false, 
+            "beta_1": 0.8999999761581421, 
+            "beta_2": 0.9990000128746033, 
+            "decay": 0.0, 
+            "epsilon": 1e-07, 
+            "learning_rate": 0.0010000000474974513, 
+            "name": "Adam"
+        }, 
+        "run_dir": "./runs/cifar-10/describer-512-3-0/describer-512-3-0-16804530614522218", 
+        "train_steps_per_epoch": 260
+    }
+}

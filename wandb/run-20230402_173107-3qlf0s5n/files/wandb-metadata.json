@@ -1,0 +1,24 @@
+{
+    "os": "Linux-5.19.0-35-generic-x86_64-with-glibc2.35",
+    "python": "3.10.6",
+    "heartbeatAt": "2023-04-02T16:31:28.383766",
+    "startedAt": "2023-04-02T16:31:07.066984",
+    "docker": null,
+    "gpu": "NVIDIA GeForce GTX 1080",
+    "gpu_count": 1,
+    "cpu_count": 8,
+    "cuda": null,
+    "args": [],
+    "state": "running",
+    "program": "/homes/okj22/Documents/Diss/Entropy-Masking-OOD/entood/experiments/train_describers.py",
+    "codePath": "entood/experiments/train_describers.py",
+    "git": {
+        "remote": "git@github.com:ojorgensen/Entropy-Masking-OOD.git",
+        "commit": "59cb35a73c5514c65d2d34c330a3c8b5a2bc4b19"
+    },
+    "email": null,
+    "root": "/homes/okj22/Documents/Diss/Entropy-Masking-OOD",
+    "host": "ray19.doc.ic.ac.uk",
+    "username": "okj22",
+    "executable": "/vol/bitbucket/okj22/tf-env2/bin/python"
+}

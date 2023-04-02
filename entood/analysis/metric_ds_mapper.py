@@ -10,7 +10,7 @@ class MetricDatasetMapper:
         self._metric = metric
     
     def _reduce_fn(self, _, batch: Tuple[tf.Tensor, tf.Tensor]):
-        # TODO: fix this horror
+        # TODO: fix this horror (lmaoo)
 
         inputs, targets = batch
         preds = self._model(inputs)

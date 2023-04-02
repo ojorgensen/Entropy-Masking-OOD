@@ -96,7 +96,73 @@ class NoMasking(MaskStrategy):
         self.make_mask([], desc_len)
         
 
-class MaskAccuracyComputer:
+class OutputComputer(ABC):
+    """
+        An abstract class to compute generic outputs from a model.
+
+    """
+    def __init__(
+            self,
+            ):
+        pass
+
+    def _print_progress(self, info_str='', end='\r'):
+        if not self.verbose and not self.silent:
+            time_elapsed = time.time() - self.time_start
+            if time_elapsed < 0.1:
+                time_elapsed = None
+            prog_bar = progress_bar_string(self.num_finished, self.total_to_compute,
+                                           time_elapsed=time_elapsed)
+            if info_str:
+                prog_str = f'{prog_bar} | {info_str}'
+            else:
+                prog_str = prog_bar
+            
+            if self.last_str_len > len(prog_str):
+                spaces = ' ' * (self.last_str_len - len(prog_str) + 1)
+            else:
+                spaces = ''
+            print(prog_str + spaces, end=end)
+            self.last_str_len = len(prog_str)
+    
+    def save(self):
+        """
+            Saves the computed metrics / outputs to a csv
+        """
+        if self.changes_made:
+            if self.save_mode == 'json':
+                with open(self.json_path, 'w') as f:
+                    json.dump(self.items, f)
+                gc.collect()
+    
+    def _load_precomputed(self):
+        loaded_items = []
+
+        try:
+            with open(self.json_path, 'r') as f:
+                loaded_items.extend(json.load(f))
+            print('Retreving precomputed JSON values...')
+        except FileNotFoundError:
+            pass
+
+        # try:
+        #     df = pd.read_csv(self.csv_path)
+        #     df.drop('Unnamed: 0', axis=1, errors='ignore', inplace=True)
+        #     print('Retreving precomputed CSV values...')
+        #     loaded_items.extend(df.to_dict('records'))
+        # except FileNotFoundError:
+        #     pass
+
+        self.items.extend(loaded_items)
+        # remove duplicates
+        self.items = [
+            dict(item) for item in set([tuple(record.items()) for record in self.items])
+        ]
+    
+
+
+
+class MaskAccuracyComputer(OutputComputer):
     """
         Class to compute masked accuracy values for describers on contrastive datasets
     """
@@ -306,55 +372,122 @@ class MaskAccuracyComputer:
         else:
             return self.items
 
-    def save(self):
+
+class ComputeEncodings(OutputComputer):
+
+    def __init__(
+            self,
+            describers,
+            base_dataset,
+            datasets,
+            verbose=False,
+            silent=False,
+            max_eval_steps=100,
+            items=None,
+            name='encodings',
+            save_mode='json',
+            base_dir='./experiments/contrastive',
+            save_freq=1
+    ):
+        self.describers = describers
+        self.base_dataset = base_dataset
+        self.datasets = datasets
+        self.verbose = verbose
+        self.silent = silent
+        self.max_eval_steps = max_eval_steps
+        self.items = items or []
+        self.name = name
+        self.save_mode = save_mode
+        self.base_dir = base_dir
+        self.save_freq = save_freq
+
+        self.changes_made = False
+        self.time_start = None
+        self.last_str_len = 0
+
+        self.total_to_compute = len(self.describers) * len(self.datasets)
+        self.num_finished = 0
+
+        self.json_path = f'{self.base_dir}/{self.name}.json'
+        self.csv_path = f'{self.base_dir}/{self.name}.csv'
+
+        self.finished = []  
+    
+    def _compute_encoding(self, describer, dataset, steps):
         """
-            Saves the computed accuracies to a csv
+        Args:
+            describer: the describer to compute the encoding for
+            dataset: the dataset to compute the encoding on
+            steps: the number of steps to compute the encoding for
         """
-        if self.changes_made:
-            if self.save_mode == 'json':
-                with open(self.json_path, 'w') as f:
-                    json.dump(self.items, f)
-                gc.collect()
+        # This should mean we run without noise, and without discretising
+        describer.training = True
+        describer.no_transform = True
+        
+        if self.verbose:
+            print(f'Computing encoding for {describer.encoding_size=}')
+            print()
+        
+        # TODO: Unsure how to incorporate steps here
+        encoding = describer.answer_encoder(dataset, self.max_eval_steps)
+        
+        self.num_finished += 1
+        self._print_progress('{describer.encoding_size}: another encoding computed (work out what information to provide here lmao)')
 
-    def _print_progress(self, info_str='', end='\r'):
-        if not self.verbose and not self.silent:
-            time_elapsed = time.time() - self.time_start
-            if time_elapsed < 0.1:
-                time_elapsed = None
-            prog_bar = progress_bar_string(self.num_finished, self.total_to_compute,
-                                           time_elapsed=time_elapsed)
-            if info_str:
-                prog_str = f'{prog_bar} | {info_str}'
-            else:
-                prog_str = prog_bar
-            
-            if self.last_str_len > len(prog_str):
-                spaces = ' ' * (self.last_str_len - len(prog_str) + 1)
-            else:
-                spaces = ''
-            print(prog_str + spaces, end=end)
-            self.last_str_len = len(prog_str)
+        return encoding
+    
+    def _compute_encodings(self, describer, dataset):
+        """
+        Computes the encodings for a given describer and dataset
 
-    def _load_precomputed(self):
-        loaded_items = []
+        Args:
+            describer: the describer to compute the encoding for
+            dataset: the dataset to compute the encoding on
+        """
+        encoding = self._compute_encoding(describer, dataset)
+        
+        self.items.append({
+            'Describer ID': getattr(describer, 'identifier', hash(describer)),
+            'Describer Backup ID': getattr(describer, 'backup_id', hash(describer)),
+            'Description Length': describer.encoding_size,
+            'Dataset': self.datasets[k]['base_dataset'],
+            'Encoding': encoding
+        })
 
+        self.changes_made = True
+        self.finished.append((describer.identifier, dataset))
+
+
+
+        
+        
+
+
+
+    def run(self, return_df=True) -> Union[pd.DataFrame, List[dict]]:
+        """
+        Runs the encoding computer
+
+        Args:
+            return_df: if True returns pd.DataFrame
+
+        Returns:
+            Encoding data in the form of a DataFrame or list of dicts
+        """
         try:
-            with open(self.json_path, 'r') as f:
-                loaded_items.extend(json.load(f))
-            print('Retreving precomputed JSON values...')
-        except FileNotFoundError:
-            pass
+            self.time_start = time.time()
+            self._print_progress()
+            for describer in self.describers:
+                for k, dataset in self.datasets.items():
+                    self._compute_encodings(describer, dataset, k)
+                    self.save()
 
-        # try:
-        #     df = pd.read_csv(self.csv_path)
-        #     df.drop('Unnamed: 0', axis=1, errors='ignore', inplace=True)
-        #     print('Retreving precomputed CSV values...')
-        #     loaded_items.extend(df.to_dict('records'))
-        # except FileNotFoundError:
-        #     pass
+        except KeyboardInterrupt:
+            print('Interrupted! :o')
 
-        self.items.extend(loaded_items)
-        # remove duplicates
-        self.items = [
-            dict(item) for item in set([tuple(record.items()) for record in self.items])
-        ]
+        self._print_progress(end='\n')
+        
+        if return_df:
+            return pd.DataFrame(self.items)
+        else:
+            return self.items
