@@ -177,7 +177,9 @@ def compute_no_noise_encodings(
     Will use the ComputeEncodings class to compute and save the encodings.
 
     Note: I don't think this is saved using weights and biases! Just saving a local
-    csv file instead.
+    csv file instead. (Dylan confirmed this)
+
+
     """
     no_noise_df_path = args.no_noise_df_path
 
@@ -226,6 +228,8 @@ def main(args):
     elif args.task == 'masked_accs':
         compute_masked_accuracies(args, describers, image_datasets, contrastive_datasets)
     elif args.task == 'encodings':
+        pass
+
 
 
 
@@ -234,7 +238,7 @@ def parse_args():
 
     # default hyperparams chosen from sweep on baseline_ft_ae
     parser.add_argument('--task', type=str, default='masked_accs',
-                        help='Which analysis task to perform (masked_accs, accs)')
+                        help='Which analysis task to perform (masked_accs, accs, encodings)')
     
     parser.add_argument('--datasets', type=str, nargs='+', default=None,
                         help='Datasets to evaluate')
