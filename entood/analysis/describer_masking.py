@@ -374,28 +374,24 @@ class MaskAccuracyComputer(OutputComputer):
 
 
 class ComputeEncodings(OutputComputer):
+    """
+    Use this by
+    """
 
     def __init__(
             self,
             describers,
-            base_dataset,
-            datasets,
             verbose=False,
             silent=False,
-            max_eval_steps=100,
             items=None,
             name='encodings',
-            save_mode='json',
             base_dir='./experiments/contrastive',
+            save_mode='json',
             save_freq=1
     ):
-        self.describers = describers
-        self.base_dataset = base_dataset
-        self.datasets = datasets
-        self.verbose = verbose
+        self.describers = describers # complete silencio
+        self.verbose = verbose and not silent # only progress bar
         self.silent = silent
-        self.max_eval_steps = max_eval_steps
-        self.items = items or []
         self.name = name
         self.save_mode = save_mode
         self.base_dir = base_dir
@@ -411,9 +407,25 @@ class ComputeEncodings(OutputComputer):
         self.json_path = f'{self.base_dir}/{self.name}.json'
         self.csv_path = f'{self.base_dir}/{self.name}.csv'
 
-        self.finished = []  
-    
-    def _compute_encoding(self, describer, dataset, steps):
+        self.items = items or []
+        # I think this loads prexisiting data from the csv file
+        self._load_precomputed()
+        if self.items:
+            self.finished = [
+                (item['Describer ID'], item['Encoding'])
+                for item in self.items
+            ]
+        else:
+            self.finished = []
+        
+        # Currently unsure what these are needed for, maybe remove
+        self.num_finished = 0
+        self.time_start = None
+        self.last_str_len = 0
+        self.changes_made = False
+        
+
+    def _compute_encoding(self, describer, dataset):
         """
         Args:
             describer: the describer to compute the encoding for
@@ -421,14 +433,19 @@ class ComputeEncodings(OutputComputer):
             steps: the number of steps to compute the encoding for
         """
         # This should mean we run without noise, and without discretising
-        describer.training = True
-        describer.no_transform = True
+        describer_model = ContrastiveDescriptionLearner(describer)
+
+        # Is this how we actually do this? I'd guess no.
+        describer_model.training = True
+        describer_model.no_transform = True
+
         
         if self.verbose:
             print(f'Computing encoding for {describer.encoding_size=}')
             print()
         
         # TODO: Unsure how to incorporate steps here
+        # TODO: Unsure if I can just pass the whole dataset here?
         encoding = describer.answer_encoder(dataset, self.max_eval_steps)
         
         self.num_finished += 1
@@ -446,7 +463,8 @@ class ComputeEncodings(OutputComputer):
         """
         encoding = self._compute_encoding(describer, dataset)
         
-        self.items.append({
+        # Once we've computed the encoding, we add it to the items list
+        self.items.extend({
             'Describer ID': getattr(describer, 'identifier', hash(describer)),
             'Describer Backup ID': getattr(describer, 'backup_id', hash(describer)),
             'Description Length': describer.encoding_size,
@@ -456,14 +474,7 @@ class ComputeEncodings(OutputComputer):
 
         self.changes_made = True
         self.finished.append((describer.identifier, dataset))
-
-
-
-        
-        
-
-
-
+    
     def run(self, return_df=True) -> Union[pd.DataFrame, List[dict]]:
         """
         Runs the encoding computer
@@ -473,6 +484,8 @@ class ComputeEncodings(OutputComputer):
 
         Returns:
             Encoding data in the form of a DataFrame or list of dicts
+            Note: this will be given to the logger to be saved, I think?
+
         """
         try:
             self.time_start = time.time()

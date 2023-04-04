@@ -132,3 +132,10 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# wandb and run logs (this should be backed up anyway!)
+wandb/
+runs/
+
+# image datasets
+image_classification.ColorectalHistology/

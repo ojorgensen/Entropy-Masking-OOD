@@ -173,8 +173,14 @@ def compute_no_noise_encodings(
     """
     Computes the encodings of the communication channels for the given describers,
     using the given datasets.
+
+    Will use the ComputeEncodings class to compute and save the encodings.
+
+    Note: I don't think this is saved using weights and biases! Just saving a local
+    csv file instead.
     """
     no_noise_df_path = args.no_noise_df_path
+
     
 
 
@@ -219,6 +225,8 @@ def main(args):
         pass
     elif args.task == 'masked_accs':
         compute_masked_accuracies(args, describers, image_datasets, contrastive_datasets)
+    elif args.task == 'encodings':
+
 
 
 def parse_args():

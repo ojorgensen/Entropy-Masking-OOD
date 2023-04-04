@@ -258,9 +258,15 @@ class Run:
         pass
 
     def _autoencoder_analysis(self):
+        # TODO: Could use this to analyse the latent space?
+        # Is this easier than running a separate experiment?
         pass
 
     def _pre_execute_setup(self):
+        """
+        This is where we start the wandb run, and add callbacks.
+        I think that callbacks are where we can add the wandb logging.
+        """
         self.wandb_run = wandb.init(project=self.wandb_project,
                                     entity=self.wandb_entity,
                                     config=self.get_config())
@@ -282,6 +288,7 @@ class Run:
         )
 
     def execute(self):
+        # Start the wandb run (among other things)
         self._pre_execute_setup()
 
         if self.keras_fit:
