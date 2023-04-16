@@ -13,7 +13,7 @@ import tensorflow as tf
 
 import pandas as pd
 
-from entood.analysis.describer_masking import MaskAccuracyComputer
+from entood.analysis.describer_masking import MaskAccuracyComputer, EncodingComputer
 from entood.analysis.describers_utils import DescribersLoader
 from entood.data_prep import image_loaders
 from entood.data_prep.k_constrast_ds import k_contrast_desc_ds, k_to_batch_size
@@ -183,6 +183,48 @@ def compute_no_noise_encodings(
     """
     no_noise_df_path = args.no_noise_df_path
 
+    no_noise_items = _try_load_existing_items(no_noise_df_path, args.overwrite_files)
+    # Just copying potentially relevant code from compute_masked_accuracies
+    eval_datasets = sorted(set(contrastive_datasets))
+    if not eval_datasets:
+        raise ValueError('No evaluation datasets provided')
+    
+    print('Evaluating no noise encodings on datasets:', ', '.join(eval_datasets))
+    print('Will write results to:', no_noise_df_path)
+    no_noise_df = pd.DataFrame(no_noise_items)
+
+    for ds_name in eval_datasets:
+        print(f'Producing {ds_name} no noise encodings...')
+        datasets_loaders = contrastive_datasets[ds_name]
+        datasets = {k: loader() for k, loader in datasets_loaders.items()}
+        (_, base_dataset), _ = image_datasets[ds_name]()
+        if no_noise_items:
+            ds_items = [
+                item for item in no_noise_items
+                if item['Dataset'] == ds_name
+            ]
+        else:
+            ds_items = None
+
+        no_noise_computer = EncodingComputer(describers, base_dataset, datasets,
+                                             items=ds_items,
+                                             max_eval_steps=args.max_eval_steps,
+                                             name=f'no_noise_{ds_simple_name(ds_name)}')
+        try:
+            no_noise_computer.run()
+        finally:
+            no_noise_computer.save()
+            no_noise_items.extend(no_noise_computer.items)
+            no_noise_df = pd.DataFrame(no_noise_items)
+            no_noise_df.to_csv(no_noise_df_path)
+            del datasets, no_noise_computer, base_dataset
+            gc.collect()
+
+    print(f'Finished computing no noise encodings.')
+    return no_noise_df
+
+    
+
     
 
 
@@ -228,7 +270,7 @@ def main(args):
     elif args.task == 'masked_accs':
         compute_masked_accuracies(args, describers, image_datasets, contrastive_datasets)
     elif args.task == 'encodings':
-        pass
+        compute_no_noise_encodings(args, describers, image_datasets, contrastive_datasets)
 
 
 
@@ -257,6 +299,10 @@ def parse_args():
     parser.add_argument('--masked_acc_df_path', type=str,
                         default='entood/experiments/contrastive/describer_masked_accuracies.csv',
                         help='Where to write masked accuracy DataFrame to.')
+    parser.add_argument('--no_noise_df_path', type=str,
+                        default='entood/experiments/contrastive/describer_no_noise_encodings.csv',
+                        help='Where to write no noise encodings DataFrame to.')
+    
     parser.add_argument('--overwrite_files', default=False, action='store_true',
                         help='Whether or not to overwrite an existing file.')
     

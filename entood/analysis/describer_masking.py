@@ -373,9 +373,9 @@ class MaskAccuracyComputer(OutputComputer):
             return self.items
 
 
-class ComputeEncodings(OutputComputer):
+class EncodingComputer(OutputComputer):
     """
-    Use this by
+    This class computes the undiscretised encodings of all inputs for a set of describers.
     """
 
     def __init__(

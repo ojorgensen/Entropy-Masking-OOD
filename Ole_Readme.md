@@ -34,3 +34,13 @@ I am going to try to follow as similar a blueprint to this as possilbe for my ex
 1. Sometimes json files are mentioned, sometimes csv files. Which are actually used for saving the results of analysis experiments?
 
 2. Workout how to use / format the datasets, especially since we don't need a contrastive dataset for the encodings experiments.
+
+## How to train on GPUs
+
+Need to add lines that look like this to the end of the ~/.bashrc file:
+
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:<CUDA_PATH>/lib64:<CUDNN_PATH>/lib64
+export PATH=$PATH:<CUDA_PATH>/bin
+
+This is because the CUDA libraries are not in the default path. If the training is not occurring on a GPU, should look at CUDA issues!
+

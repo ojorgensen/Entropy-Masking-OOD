@@ -113,6 +113,8 @@ class DescribersLoader:
             if (config := load_config(run_path)) 
             and config.get('name', '').startswith('describer')
         ]
+        print('boooooooooooo')
+        print(f'Found {len(paths)} describer runs.')
         
         if shuffle:
             random.shuffle(paths)
