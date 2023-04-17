@@ -208,7 +208,6 @@ def compute_no_noise_encodings(
 
         no_noise_computer = EncodingComputer(describers, base_dataset, datasets,
                                              items=ds_items,
-                                             max_eval_steps=args.max_eval_steps,
                                              name=f'no_noise_{ds_simple_name(ds_name)}')
         try:
             no_noise_computer.run()

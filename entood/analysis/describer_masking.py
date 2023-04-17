@@ -381,6 +381,8 @@ class EncodingComputer(OutputComputer):
     def __init__(
             self,
             describers,
+            base_dataset,
+            datasets,
             verbose=False,
             silent=False,
             items=None,
@@ -396,6 +398,9 @@ class EncodingComputer(OutputComputer):
         self.save_mode = save_mode
         self.base_dir = base_dir
         self.save_freq = save_freq
+
+        self.datasets = datasets
+        self.base_dataset = base_dataset
 
         self.changes_made = False
         self.time_start = None
@@ -492,7 +497,7 @@ class EncodingComputer(OutputComputer):
             self._print_progress()
             for describer in self.describers:
                 for k, dataset in self.datasets.items():
-                    self._compute_encodings(describer, dataset, k)
+                    self._compute_encodings(describer, dataset)
                     self.save()
 
         except KeyboardInterrupt:
