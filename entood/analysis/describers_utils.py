@@ -113,7 +113,6 @@ class DescribersLoader:
             if (config := load_config(run_path)) 
             and config.get('name', '').startswith('describer')
         ]
-        print('boooooooooooo')
         print(f'Found {len(paths)} describer runs.')
         
         if shuffle:
@@ -130,6 +129,8 @@ class DescribersLoader:
             for (run_path, config) in paths
             if (describer := self.load_describer(run_path, config, verbose=verbose))
         )
+        # Note: describers is a generator
+        print()
 
         if filter_untrained:
             describers = (
@@ -151,6 +152,7 @@ class DescribersLoader:
     def load_describer(self, run_path, config, verbose=False):
 
         model_config = config.get('model_config')
+        print("model config is ", model_config)
         if not model_config or model_config == 'N/A':
             self.num_processed += 1
             return None
@@ -169,6 +171,11 @@ class DescribersLoader:
             print(run_path, summary)
 
         enc_size = config['model_config']['desc_len']
+        # If not specified, assume the default value
+        try:
+            channel_noise = config['model_config']['channel_noise']
+        except KeyError:
+            channel_noise = 0.5
         name = config['model_config']['name']
 
         ds_info = config.get('ds_info') or {'num_distractors': 3}
@@ -196,7 +203,8 @@ class DescribersLoader:
             }
 
         try:
-            describer = ContrastiveDescriptionLearner(enc_size=enc_size)
+            # TODO: this always loads a model with channel noise 0.5. Need to include
+            describer = ContrastiveDescriptionLearner(enc_size=enc_size, channel_noise=channel_noise)
             describer.training_k = k
             describer.training_summary = summary
             describer.training_ds = self.datasets[k]
@@ -210,6 +218,7 @@ class DescribersLoader:
                 print()
             describer.load_weights(f'{run_path}/files/model-best.h5')
             describer.compile(metrics=['acc'])
+            print("successfully returning a describer!")
             return describer
             
         except FileNotFoundError:
@@ -217,6 +226,7 @@ class DescribersLoader:
         
         finally:
             self.num_processed += 1
+            print("num processed: ", self.num_processed)
             if not verbose:
                 time_elapsed = time.time() - self.time_start
                 print(progress_bar_string(self.num_processed, self.total_to_load, time_elapsed=time_elapsed), 

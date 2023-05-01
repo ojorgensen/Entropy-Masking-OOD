@@ -32,6 +32,7 @@ class ContrastiveDescriptionLearner(tf.keras.Model):
                                                             **keras_kwargs)
 
         self.encoding_size = int(enc_size)
+        self.channel_noise = channel_noise
 
         self.augmenter = tf.keras.Sequential([
             tf.keras.layers.RandomRotation(0.1, fill_mode='nearest'),
@@ -81,7 +82,8 @@ class ContrastiveDescriptionLearner(tf.keras.Model):
     def get_config(self) -> dict:
         return {
             'name': self.name,
-            'desc_len': self.encoding_size
+            'desc_len': self.encoding_size,
+            'channel_noise': self.channel_noise,
         }
     
     def solve(self, answer_enc, problem_tokens, training=False):

@@ -54,8 +54,8 @@ def parse_args():
 
 def main():
     config = parse_args()
-    config['desc_lens'] = config['desc_len'] or [512]
-    config['training_ks'] = config['num_distractors'] or [3]
+    config['desc_lens'] = config['desc_len'] or [64]
+    config['training_ks'] = config['num_distractors'] or [5]
 
     datasets, ds_info = generate_data(config)
 
